@@ -36,7 +36,6 @@ import be.uclouvain.multipathcontrol.R;
 import be.uclouvain.multipathcontrol.global.Config;
 import be.uclouvain.multipathcontrol.global.Manager;
 import be.uclouvain.multipathcontrol.services.MainService;
-import be.uclouvain.multipathcontrol.stats.JSONSender;
 import be.uclouvain.multipathcontrol.system.Sysctl;
 
 public class MainActivity extends Activity {
@@ -48,8 +47,6 @@ public class MainActivity extends Activity {
 	private Switch saveBatterySwitch;
 	private Switch ipv6Switch;
 	private Switch savePowerGPSSwitch;
-	private Switch trackingSwitch;
-	private Switch trackingSecSwitch;
 	private Button tcpCCButton;
 
 	@Override
@@ -63,8 +60,6 @@ public class MainActivity extends Activity {
 		saveBatterySwitch = (Switch) findViewById(R.id.switch_save_battery);
 		ipv6Switch = (Switch) findViewById(R.id.switch_ipv6);
 		savePowerGPSSwitch = (Switch) findViewById(R.id.switch_save_power_gps);
-		trackingSwitch = (Switch) findViewById(R.id.switch_tracking);
-		trackingSecSwitch = (Switch) findViewById(R.id.switch_tracking_sec);
 		tcpCCButton = (Button) findViewById(R.id.button_tcp_cc);
 
 		mpctrl = Manager.create(getApplicationContext());
@@ -88,14 +83,8 @@ public class MainActivity extends Activity {
 		ipv6Switch.setOnCheckedChangeListener(onCheckedChangeListernerIPv6);
 		savePowerGPSSwitch
 				.setOnCheckedChangeListener(onCheckedChangeListernerSavePowerGPS);
-		trackingSwitch
-				.setOnCheckedChangeListener(onCheckedChangeListernerTracking);
-		trackingSecSwitch
-				.setOnCheckedChangeListener(onCheckedChangeListernerTrackingSec);
 		tcpCCButton.setOnClickListener(onClickListenerTcpCC);
 
-		Button testButton = (Button) findViewById(R.id.button_send_data);
-		testButton.setOnClickListener(onClickListenerSend);
 
 
 		// start a new service if needed
@@ -122,8 +111,6 @@ public class MainActivity extends Activity {
 		saveBatterySwitch.setChecked(Config.saveBattery);
 		ipv6Switch.setChecked(Config.ipv6);
 		savePowerGPSSwitch.setChecked(Config.savePowerGPS);
-		trackingSwitch.setChecked(Config.tracking);
-		trackingSecSwitch.setChecked(Config.trackingSec);
 		tcpCCButton.setText(getText(R.string.button_tcp_cc) + ": "
 				+ Config.tcpcc);
 	}
@@ -190,26 +177,7 @@ public class MainActivity extends Activity {
 		}
 	};
 
-	private OnCheckedChangeListener onCheckedChangeListernerTracking = new OnCheckedChangeListener() {
-		@Override
-		public void onCheckedChanged(CompoundButton buttonView,
-				boolean isChecked) {
-			if (mpctrl.setTracking(isChecked))
-				mpctrl.displayWarningIfNoHostname(isChecked);
-		}
-	};
 
-	private OnCheckedChangeListener onCheckedChangeListernerTrackingSec = new OnCheckedChangeListener() {
-		@Override
-		public void onCheckedChanged(CompoundButton buttonView,
-				boolean isChecked) {
-			if (mpctrl.setTrackingSec(isChecked)) {
-				// track with better accuracy
-				savePowerGPSSwitch.setChecked(!isChecked);
-				mpctrl.displayWarningIfNoHostname(isChecked);
-			}
-		}
-	};
 
 	private OnClickListener onClickListenerTcpCC = new OnClickListener() {
 		@Override
@@ -218,12 +186,5 @@ public class MainActivity extends Activity {
 			startActivity(intent);
 		}
 	};
-
-	private OnClickListener onClickListenerSend = new OnClickListener() {
-		@Override
-		public void onClick(View v) {
-			Log.d(Manager.TAG, "Send data from button");
-			JSONSender.sendAll(getApplicationContext());
-		}
-	};
+	
 }

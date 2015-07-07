@@ -22,7 +22,6 @@ package be.uclouvain.multipathcontrol.global;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import be.uclouvain.multipathcontrol.stats.SaveDataApp;
 import be.uclouvain.multipathcontrol.system.Sysctl;
 
 public class Config {
@@ -34,9 +33,7 @@ public class Config {
 	public static final String PREFS_SAVE_BATTERY   = "saveBattery";
 	public static final String PREFS_IPV6           = "ipv6";
 	public static final String PREFS_SAVE_POWER_GPS = "savePowerGPS";
-	public static final String PREFS_TRACKING       = "tracking";
 	public static final String PREFS_TCPCC          = "tcpcc";
-	public static final String PREFS_STATS_SET      = "statsSet";
 
 	public static boolean mEnabled;
 	public static boolean defaultRouteData;
@@ -44,11 +41,9 @@ public class Config {
 	public static boolean saveBattery;
 	public static boolean ipv6;
 	public static boolean savePowerGPS;
-	public static boolean tracking;
 	public static String tcpcc;
 
 	public static int mobileDataActiveTime = 5000;
-	public static boolean trackingSec = false;
 
 	private Config() {
 	}
@@ -61,9 +56,6 @@ public class Config {
 		dataBackup = settings.getBoolean(PREFS_DATA_BACKUP, false);
 		saveBattery = settings.getBoolean(PREFS_SAVE_BATTERY, true);
 		savePowerGPS = settings.getBoolean(PREFS_SAVE_POWER_GPS, true);
-		// false by default if no hostname is defined (where to send data)
-		tracking = settings.getBoolean(PREFS_TRACKING,
-				!ConfigServer.hostname.isEmpty());
 
 		// Dynamic
 		ipv6 = settings.getBoolean(PREFS_IPV6, false);
@@ -81,8 +73,6 @@ public class Config {
 	}
 
 	public static void saveStatus(Context context) {
-		if (tracking)
-			new SaveDataApp(context);
 
 		SharedPreferences settings = context.getSharedPreferences(PREFS_NAME,
 				Context.MODE_PRIVATE);
@@ -93,7 +83,6 @@ public class Config {
 		editor.putBoolean(PREFS_SAVE_BATTERY, saveBattery);
 		editor.putBoolean(PREFS_IPV6, ipv6);
 		editor.putBoolean(PREFS_SAVE_POWER_GPS, savePowerGPS);
-		editor.putBoolean(PREFS_TRACKING, tracking);
 		editor.putString(PREFS_TCPCC, tcpcc);
 		editor.apply();
 	}

@@ -33,13 +33,9 @@ import android.os.PowerManager;
 import android.util.Log;
 import android.widget.Toast;
 import be.uclouvain.multipathcontrol.global.Config;
-import be.uclouvain.multipathcontrol.global.ConfigServer;
 import be.uclouvain.multipathcontrol.global.Manager;
 import be.uclouvain.multipathcontrol.ifaces.IPRoute;
 import be.uclouvain.multipathcontrol.ifaces.MobileDataMgr;
-import be.uclouvain.multipathcontrol.stats.JSONSender;
-import be.uclouvain.multipathcontrol.stats.SaveDataApp;
-import be.uclouvain.multipathcontrol.stats.SaveDataHandover;
 import be.uclouvain.multipathcontrol.system.Cmd;
 import be.uclouvain.multipathcontrol.system.IPRouteUtils;
 import be.uclouvain.multipathcontrol.ui.Notifications;
@@ -61,8 +57,6 @@ public class MPCtrl {
 					.getSystemService(Context.POWER_SERVICE);
 			if (pm.isScreenOn())
 				mobileDataMgr.setMobileDataActive(Config.mEnabled);
-			if (iproute.monitorInterfaces() && Config.tracking)
-				new SaveDataHandover(context);
 		}
 	};
 
@@ -91,11 +85,7 @@ public class MPCtrl {
 		if (Config.mEnabled)
 			notif.showNotification();
 
-		// Log
-		if (Config.tracking) {
-			new SaveDataApp(context);
-			new SaveDataHandover(context);
-		}
+
 	}
 
 	public void destroy() {
@@ -122,8 +112,7 @@ public class MPCtrl {
 
 		if (isChecked) {
 			notif.showNotification();
-			if (iproute.monitorInterfaces() && Config.tracking)
-				new SaveDataHandover(context);
+
 		} else {
 			notif.hideNotification();
 		}
@@ -162,47 +151,9 @@ public class MPCtrl {
 			return false;
 		Config.savePowerGPS = isChecked;
 		Config.saveStatus(context);
-		SaveDataHandover.savePowerGPS(isChecked);
 		return true;
 	}
 
-	public boolean setTracking(boolean isChecked) {
-		if (isChecked == Config.tracking)
-			return false;
-		Config.tracking = isChecked;
-		Config.saveStatus(context);
-		// we also need to know when it has been disabled
-		if (!Config.tracking)
-			new SaveDataApp(context);
-		return true;
-	}
-
-	public boolean setTrackingSec(boolean isChecked) {
-		if (isChecked == Config.trackingSec)
-			return false;
-		Config.trackingSec = isChecked;
-		if (Config.trackingSec) {
-			Config.mobileDataActiveTime = 1000;
-			handler.post(runnableTracking);
-		}
-		else {
-			Config.mobileDataActiveTime = 5000;
-			Toast.makeText(context, "Stop tracking, sending data",
-					Toast.LENGTH_LONG).show();
-			JSONSender.sendAll(context);
-		}
-		return true;
-	}
-
-	public void displayWarningIfNoHostname(boolean isChecked) {
-		if (isChecked && ConfigServer.hostname.isEmpty())
-			Toast.makeText(
-					context,
-					"Collecting data but no hostname defined. Data will be "
-							+ "stored in the preferences of this app but never"
-							+ " sent to a server.",
-					Toast.LENGTH_LONG).show();
-	}
 
 	/**
 	 * Restart all active interfaces in order to be sure that all connections
@@ -238,7 +189,6 @@ public class MPCtrl {
 
 		// First check
 		handler.post(runnableSetMobileDataActive);
-		handler.postDelayed(runnableSendData, 5 * 1000 * 60); // 5min
 	}
 
 	/*
@@ -258,23 +208,4 @@ public class MPCtrl {
 		}
 	};
 
-	private Runnable runnableSendData = new Runnable() {
-		final long oneHourMs = 1000 * 60 * 60;
-
-		@Override
-		public void run() {
-			Log.d(Manager.TAG, "Schedule: new upload");
-			JSONSender.sendAll(context);
-			handler.postDelayed(this, oneHourMs);
-		}
-	};
-
-	private Runnable runnableTracking = new Runnable() {
-		@Override
-		public void run() {
-			new SaveDataHandover(context, true);
-			if (Config.trackingSec) // continue if enable
-				handler.postDelayed(this, 1000);
-		}
-	};
 }
