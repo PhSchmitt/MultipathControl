@@ -51,6 +51,11 @@
             android:launchMode="singleTask">
         </activity>
 
+        <activity android:name="be.uclouvain.multipathcontrol.activities.SchedActivity"
+            android:label="@string/button_sched"
+            android:launchMode="singleTask">
+        </activity>
+
         <!--<meta-data android:name="com.google.android.gms.version"-->
             <!--android:value="@integer/google_play_services_version" />-->
 

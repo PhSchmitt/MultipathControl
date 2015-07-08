@@ -81,6 +81,26 @@ public class Sysctl {
 		return setSysctl("net.ipv4.tcp_congestion_control", value);
 	}
 
+    //TODO: can we read the available scheds out of the system?
+    public static String[] getAvScheds() {
+        String[] ret = new String[4];
+        ret[0] = "default";
+        ret[1] = "roundrobin";
+        ret[2] = "9010";
+        ret[3] = "appchoice";
+        return ret;
+    }
+
+    public static String getScheduler()
+    {
+        return getSysctl("net.mptcp.mptcp_scheduler");
+    }
+
+    public static boolean setScheduler(String value) {
+        return setSysctl("net.mptcp.mptcp_scheduler", value);
+    }
+
+
 	public static boolean getIPv6() {
 		return getSysctl("net.ipv6.conf.all.disable_ipv6").equals("0");
 	}

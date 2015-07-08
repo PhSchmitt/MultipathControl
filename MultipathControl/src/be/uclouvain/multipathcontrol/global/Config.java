@@ -34,6 +34,7 @@ public class Config {
 	public static final String PREFS_IPV6           = "ipv6";
 	public static final String PREFS_SAVE_POWER_GPS = "savePowerGPS";
 	public static final String PREFS_TCPCC          = "tcpcc";
+    public static final String PREFS_SCHEDULER      = "scheduler";
 
 	public static boolean mEnabled;
 	public static boolean defaultRouteData;
@@ -42,6 +43,7 @@ public class Config {
 	public static boolean ipv6;
 	public static boolean savePowerGPS;
 	public static String tcpcc;
+	public static String scheduler;
 
 	public static int mobileDataActiveTime = 5000;
 
@@ -65,6 +67,10 @@ public class Config {
 		tcpcc = settings.getString(PREFS_TCPCC, "lia");
 		if (!tcpcc.equals(Sysctl.getCC()))
 			Sysctl.setCC(tcpcc);
+
+        scheduler = settings.getString(PREFS_SCHEDULER, "default");
+        if (!scheduler.equals(Sysctl.getScheduler()))
+            Sysctl.setScheduler(scheduler);
 	}
 
 	public static void updateDynamicConfig() {

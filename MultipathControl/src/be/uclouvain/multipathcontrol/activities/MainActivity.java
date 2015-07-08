@@ -48,6 +48,7 @@ public class MainActivity extends Activity {
 	private Switch ipv6Switch;
 	private Switch savePowerGPSSwitch;
 	private Button tcpCCButton;
+    private Button schedulerButton;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +62,7 @@ public class MainActivity extends Activity {
 		ipv6Switch = (Switch) findViewById(R.id.switch_ipv6);
 		savePowerGPSSwitch = (Switch) findViewById(R.id.switch_save_power_gps);
 		tcpCCButton = (Button) findViewById(R.id.button_tcp_cc);
+        schedulerButton = (Button) findViewById(R.id.button_sched);
 
 		mpctrl = Manager.create(getApplicationContext());
 		if (mpctrl == null) {
@@ -84,7 +86,7 @@ public class MainActivity extends Activity {
 		savePowerGPSSwitch
 				.setOnCheckedChangeListener(onCheckedChangeListernerSavePowerGPS);
 		tcpCCButton.setOnClickListener(onClickListenerTcpCC);
-
+        schedulerButton.setOnClickListener(onClickListenerScheduler);
 
 
 		// start a new service if needed
@@ -186,5 +188,13 @@ public class MainActivity extends Activity {
 			startActivity(intent);
 		}
 	};
-	
+
+	private OnClickListener onClickListenerScheduler = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			Intent intent = new Intent(MainActivity.this, SchedActivity.class);
+			startActivity(intent);
+		}
+	};
+
 }
