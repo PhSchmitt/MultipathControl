@@ -114,7 +114,9 @@ public class MainActivity extends Activity {
 		ipv6Switch.setChecked(Config.ipv6);
 		savePowerGPSSwitch.setChecked(Config.savePowerGPS);
 		tcpCCButton.setText(getText(R.string.button_tcp_cc) + ": "
-				+ Config.tcpcc);
+                + Config.tcpcc);
+        schedulerButton.setText(getText(R.string.button_sched) + ": "
+                + Config.scheduler);
 	}
 
 	private OnCheckedChangeListener onCheckedChangeListernerMultiIface = new OnCheckedChangeListener() {
